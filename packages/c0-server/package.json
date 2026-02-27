@@ -1,0 +1,32 @@
+{
+  "name": "@c0/server",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@c0/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7",
+    "vitest": "^3"
+  },
+  "peerDependencies": {
+    "openai": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "openai": { "optional": true }
+  }
+}
