@@ -1,6 +1,6 @@
 {
-  "name": "@c0/react",
-  "version": "0.1.0",
+  "name": "@c0-ui/react",
+  "version": "0.1.1",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,15 +8,61 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./renderers/StreamRenderer": {
+      "types": "./dist/renderer/StreamRenderer.d.ts",
+      "import": "./dist/renderer/StreamRenderer.js"
+    },
+    "./renderers/ContentRenderer": {
+      "types": "./dist/renderer/ContentRenderer.d.ts",
+      "import": "./dist/renderer/ContentRenderer.js"
+    },
+    "./renderers/ThinkRenderer": {
+      "types": "./dist/renderer/ThinkRenderer.d.ts",
+      "import": "./dist/renderer/ThinkRenderer.js"
+    },
+    "./renderers/ArtifactRenderer": {
+      "types": "./dist/renderer/ArtifactRenderer.d.ts",
+      "import": "./dist/renderer/ArtifactRenderer.js"
+    },
+    "./renderers/registry": {
+      "types": "./dist/renderer/registry.d.ts",
+      "import": "./dist/renderer/registry.js"
+    },
+    "./renderers/defaults/*": {
+      "types": "./dist/renderer/defaults/*.d.ts",
+      "import": "./dist/renderer/defaults/*.js"
+    },
+    "./hooks/useThread": {
+      "types": "./dist/hooks/useThread.d.ts",
+      "import": "./dist/hooks/useThread.js"
+    },
+    "./hooks/useStreaming": {
+      "types": "./dist/hooks/useStreaming.d.ts",
+      "import": "./dist/hooks/useStreaming.js"
+    },
+    "./hooks/useAction": {
+      "types": "./dist/hooks/useAction.d.ts",
+      "import": "./dist/hooks/useAction.js"
+    },
+    "./hooks/useC0State": {
+      "types": "./dist/hooks/useC0State.d.ts",
+      "import": "./dist/hooks/useC0State.js"
+    },
+    "./chat": {
+      "types": "./dist/chat/index.d.ts",
+      "import": "./dist/chat/index.js"
     }
   },
+  "files": ["dist"],
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@c0/protocol": "workspace:*",
+    "@c0-ui/protocol": "workspace:*",
     "react-markdown": "^9",
     "remark-gfm": "^4"
   },

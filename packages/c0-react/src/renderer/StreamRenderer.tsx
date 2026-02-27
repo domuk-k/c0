@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { createStreamParser } from '@c0/protocol';
+import { createStreamParser } from '@c0-ui/protocol';
 
 import { ArtifactRenderer } from './ArtifactRenderer.js';
 import { ContentRenderer } from './ContentRenderer.js';
 import { ThinkRenderer } from './ThinkRenderer.js';
 import type { StreamRendererProps } from '../types.js';
-import type { ArtifactPart, CustomMarkdownPart } from '@c0/protocol';
+import type { ArtifactPart, CustomMarkdownPart } from '@c0-ui/protocol';
 
 /**
  * Core renderer that parses XML-DSL content and renders the appropriate components.
@@ -24,6 +24,8 @@ export function StreamRenderer({
   isStreaming,
   components,
   onAction,
+  renderArtifact,
+  renderThink,
 }: StreamRendererProps) {
   const parsed = useMemo(() => {
     if (!content) return null;
@@ -38,7 +40,9 @@ export function StreamRenderer({
     <div className="c0-response" data-streaming={isStreaming}>
       {/* Think items */}
       {parsed.think.length > 0 && (
-        <ThinkRenderer items={parsed.think} isStreaming={isStreaming} />
+        renderThink
+          ? renderThink(parsed.think, isStreaming)
+          : <ThinkRenderer items={parsed.think} isStreaming={isStreaming} />
       )}
 
       {/* Message parts */}
@@ -49,6 +53,9 @@ export function StreamRenderer({
 
           case 'artifact': {
             const artifact = part as ArtifactPart;
+            if (renderArtifact) {
+              return <React.Fragment key={artifact.id || `artifact-${i}`}>{renderArtifact(artifact)}</React.Fragment>;
+            }
             return (
               <ArtifactRenderer
                 key={artifact.id || `artifact-${i}`}

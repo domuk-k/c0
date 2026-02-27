@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react';
-import type { ParsedResponse } from '@c0/protocol';
+import type { ComponentType, ReactNode } from 'react';
+import type { ArtifactPart, ParsedResponse, ThinkItem } from '@c0-ui/protocol';
 
 // ─── Message Types ────────────────────────────────────────
 
@@ -69,6 +69,12 @@ export interface C0ChatProps {
   /** Callback when user performs an action in a component */
   onAction?: (action: C0Action) => void;
 
+  /** Custom artifact renderer (overrides built-in ArtifactRenderer) */
+  renderArtifact?: (artifact: ArtifactPart) => ReactNode;
+
+  /** Custom think renderer (overrides built-in ThinkRenderer) */
+  renderThink?: (items: ThinkItem[], isStreaming: boolean) => ReactNode;
+
   /** CSS class name */
   className?: string;
 }
@@ -80,6 +86,10 @@ export interface StreamRendererProps {
   isStreaming: boolean;
   components?: C0ComponentLibrary;
   onAction?: (action: C0Action) => void;
+  /** Custom artifact renderer (overrides built-in ArtifactRenderer) */
+  renderArtifact?: (artifact: ArtifactPart) => ReactNode;
+  /** Custom think renderer (overrides built-in ThinkRenderer) */
+  renderThink?: (items: ThinkItem[], isStreaming: boolean) => ReactNode;
 }
 
 export interface ContentRendererProps {
