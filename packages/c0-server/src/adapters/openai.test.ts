@@ -60,6 +60,74 @@ describe('transformOpenAIStream', () => {
   });
 });
 
+describe('transformOpenAIStream callbacks', () => {
+  it('calls onArtifact when artifact completes in stream', async () => {
+    const artifacts: any[] = [];
+    const llm = mockOpenAIStream([
+      '<artifact type="chart" id="s-1" version="1">',
+      '{"component":"Chart"}',
+      '</artifact>',
+    ]);
+
+    const stream = transformOpenAIStream(llm, {
+      onArtifact: (a) => artifacts.push(a),
+    });
+
+    await consumeStream(stream);
+    expect(artifacts).toHaveLength(1);
+    expect(artifacts[0].artifactType).toBe('chart');
+    expect(artifacts[0].id).toBe('s-1');
+  });
+
+  it('calls onThink when thinkitem completes in stream', async () => {
+    const thinks: any[] = [];
+    const llm = mockOpenAIStream([
+      '<thinkitem ephemeral="true">',
+      '<thinkitemtitle>Step 1</thinkitemtitle>',
+      '<thinkitemcontent>Analyzing</thinkitemcontent>',
+      '</thinkitem>',
+    ]);
+
+    const stream = transformOpenAIStream(llm, {
+      onThink: (t) => thinks.push(t),
+    });
+
+    await consumeStream(stream);
+    expect(thinks).toHaveLength(1);
+    expect(thinks[0].title).toBe('Step 1');
+    expect(thinks[0].content).toBe('Analyzing');
+  });
+
+  it('works without callbacks (backward compat)', async () => {
+    const llm = mockOpenAIStream(['<content>', 'Hello', '</content>']);
+    const stream = transformOpenAIStream(llm);
+    const result = await consumeStream(stream);
+
+    expect(result).toBe('<content>Hello</content>');
+  });
+
+  it('combines onEnd with onArtifact', async () => {
+    let ended = '';
+    const artifacts: any[] = [];
+
+    const llm = mockOpenAIStream([
+      '<content>Intro</content>',
+      '<artifact type="table" id="t-1" version="1">',
+      '{"component":"Table"}',
+      '</artifact>',
+    ]);
+
+    const stream = transformOpenAIStream(llm, {
+      onEnd: (acc) => { ended = acc; },
+      onArtifact: (a) => artifacts.push(a),
+    });
+
+    await consumeStream(stream);
+    expect(ended).toContain('<content>Intro</content>');
+    expect(artifacts).toHaveLength(1);
+  });
+});
+
 describe('toOpenAIMessages', () => {
   it('converts c0 messages to OpenAI format', () => {
     const messages = [

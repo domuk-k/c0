@@ -5,9 +5,16 @@
  * This is the "pass-through" pattern used in C1 playground's route.ts.
  */
 
+import { createStreamParser } from '@c0-ui/protocol';
+import type { ArtifactPart, ThinkItem } from '@c0-ui/protocol';
+
 export interface TransformStreamOptions {
   /** Called when the stream ends with all accumulated chunks */
   onEnd?: (accumulated: string) => void;
+  /** Called when an artifact tag closes during streaming */
+  onArtifact?: (artifact: ArtifactPart) => void;
+  /** Called when a thinkitem completes during streaming */
+  onThink?: (item: ThinkItem) => void;
 }
 
 /**
@@ -29,6 +36,7 @@ export interface TransformStreamOptions {
  *
  * const responseStream = transformOpenAIStream(llmStream, {
  *   onEnd: (message) => { messageStore.save(message); },
+ *   onArtifact: (artifact) => { console.log('artifact complete:', artifact.id); },
  * });
  *
  * return new Response(responseStream);
@@ -43,12 +51,19 @@ export function transformOpenAIStream(
 
   (async () => {
     const chunks: string[] = [];
+    const parser = (options?.onArtifact || options?.onThink)
+      ? createStreamParser({
+          onArtifact: options?.onArtifact,
+          onThink: options?.onThink,
+        })
+      : null;
 
     try {
       for await (const chunk of llmStream) {
         const content = chunk.choices?.[0]?.delta?.content ?? '';
         if (content) {
           chunks.push(content);
+          parser?.write(content);
           await writer.write(content);
         }
       }
