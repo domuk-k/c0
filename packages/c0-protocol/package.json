@@ -1,5 +1,5 @@
 {
-  "name": "@c0/protocol",
+  "name": "@c0-ui/protocol",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,6 +10,8 @@
       "import": "./dist/index.js"
     }
   },
+  "files": ["dist"],
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

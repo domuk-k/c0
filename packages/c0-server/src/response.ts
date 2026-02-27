@@ -12,7 +12,7 @@ import {
   wrapArtifact,
   wrapCustomMarkdown,
   type ArtifactMeta,
-} from '@c0/protocol';
+} from '@c0-ui/protocol';
 
 export interface C0ResponseWriter {
   /** The readable stream to return as the HTTP response */

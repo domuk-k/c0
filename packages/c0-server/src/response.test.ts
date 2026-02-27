@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeC0Response } from './response.js';
-import { parseResponse } from '@c0/protocol';
+import { parseResponse } from '@c0-ui/protocol';
 
 /** Helper to consume a ReadableStream<string> into a single string */
 async function consumeStream(stream: ReadableStream<string>): Promise<string> {

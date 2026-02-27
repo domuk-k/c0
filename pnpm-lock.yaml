@@ -17,13 +17,13 @@ importers:
 
   apps/playground:
     dependencies:
-      '@c0/protocol':
+      '@c0-ui/protocol':
         specifier: workspace:*
         version: link:../../packages/c0-protocol
-      '@c0/react':
+      '@c0-ui/react':
         specifier: workspace:*
         version: link:../../packages/c0-react
-      '@c0/server':
+      '@c0-ui/server':
         specifier: workspace:*
         version: link:../../packages/c0-server
       next:
@@ -67,7 +67,7 @@ importers:
 
   packages/c0-react:
     dependencies:
-      '@c0/protocol':
+      '@c0-ui/protocol':
         specifier: workspace:*
         version: link:../c0-protocol
       react:
@@ -92,10 +92,7 @@ importers:
 
   packages/c0-server:
     dependencies:
-      '@anthropic-ai/sdk':
-        specifier: '>=0.30'
-        version: 0.78.0
-      '@c0/protocol':
+      '@c0-ui/protocol':
         specifier: workspace:*
         version: link:../c0-protocol
       openai:
@@ -110,19 +107,6 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)
 
 packages:
-
-  '@anthropic-ai/sdk@0.78.0':
-    resolution: {integrity: sha512-PzQhR715td/m1UaaN5hHXjYB8Gl2lF9UVhrrGrZeysiF6Rb74Wc9GCB8hzLdzmQtBd1qe89F9OptgB9Za1Ib5w==}
-    hasBin: true
-    peerDependencies:
-      zod: ^3.25.0 || ^4.0.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
-
-  '@babel/runtime@7.28.6':
-    resolution: {integrity: sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==}
-    engines: {node: '>=6.9.0'}
 
   '@emnapi/runtime@1.8.1':
     resolution: {integrity: sha512-mehfKSMWjjNol8659Z8KxEMrdSJDDot5SXMq00dM8BN4o+CLNXQ0xH2V7EchNHV4RmbZLmmPdEaXZc5H2FXmDg==}
@@ -932,10 +916,6 @@ packages:
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
 
-  json-schema-to-ts@3.1.1:
-    resolution: {integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==}
-    engines: {node: '>=16'}
-
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
 
@@ -1300,9 +1280,6 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-algebra@2.0.0:
-    resolution: {integrity: sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==}
-
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -1464,12 +1441,6 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
-
-  '@anthropic-ai/sdk@0.78.0':
-    dependencies:
-      json-schema-to-ts: 3.1.1
-
-  '@babel/runtime@7.28.6': {}
 
   '@emnapi/runtime@1.8.1':
     dependencies:
@@ -2120,11 +2091,6 @@ snapshots:
 
   js-tokens@9.0.1: {}
 
-  json-schema-to-ts@3.1.1:
-    dependencies:
-      '@babel/runtime': 7.28.6
-      ts-algebra: 2.0.0
-
   longest-streak@3.1.0: {}
 
   loupe@3.2.1: {}
@@ -2745,8 +2711,6 @@ snapshots:
   trim-lines@3.0.1: {}
 
   trough@2.2.0: {}
-
-  ts-algebra@2.0.0: {}
 
   tslib@2.8.1: {}
 

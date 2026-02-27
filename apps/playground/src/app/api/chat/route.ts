@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { C0_SYSTEM_PROMPT } from '@c0/server';
-import { transformOpenAIStream } from '@c0/server';
+import { C0_SYSTEM_PROMPT } from '@c0-ui/server';
+import { transformOpenAIStream } from '@c0-ui/server';
 
 /**
  * Message store — in-memory for the playground.

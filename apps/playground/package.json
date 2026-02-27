@@ -9,9 +9,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "@c0/protocol": "workspace:*",
-    "@c0/server": "workspace:*",
-    "@c0/react": "workspace:*",
+    "@c0-ui/protocol": "workspace:*",
+    "@c0-ui/server": "workspace:*",
+    "@c0-ui/react": "workspace:*",
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",

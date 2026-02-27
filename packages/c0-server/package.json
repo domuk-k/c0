@@ -1,5 +1,5 @@
 {
-  "name": "@c0/server",
+  "name": "@c0-ui/server",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,6 +10,8 @@
       "import": "./dist/index.js"
     }
   },
+  "files": ["dist"],
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -17,7 +19,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@c0/protocol": "workspace:*"
+    "@c0-ui/protocol": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7",

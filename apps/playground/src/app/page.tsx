@@ -1,6 +1,6 @@
 'use client';
 
-import { C0Chat } from '@c0/react';
+import { C0Chat } from '@c0-ui/react';
 
 export default function Home() {
   return (
