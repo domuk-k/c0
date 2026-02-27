@@ -7,6 +7,7 @@ export type {
   MessagePart,
   ParsedResponse,
   StreamParser,
+  StreamParserOptions,
   ThinkItem,
 } from './types.js';
 
@@ -15,6 +16,9 @@ export { createStreamParser, parseResponse } from './parser.js';
 
 // Serializer
 export { extractContext, serializeResponse } from './serializer.js';
+
+// JSON repair
+export { repairJson } from './repair.js';
 
 // Tag builders
 export {

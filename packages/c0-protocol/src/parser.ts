@@ -17,9 +17,11 @@ import type {
   ParsedResponse,
   ParserState,
   StreamParser,
+  StreamParserOptions,
   TagName,
   ThinkItem,
 } from './types.js';
+import { repairJson } from './repair.js';
 
 // ─── Initial State ────────────────────────────────────────
 
@@ -198,7 +200,10 @@ function handleText(state: ParserState, text: string): void {
 
 // ─── Close Tag Handler ────────────────────────────────────
 
-function handleCloseTag(state: ParserState): void {
+/** Returns the closing tag name so callers can fire callbacks */
+function handleCloseTag(state: ParserState): TagName | undefined {
+  const closingTag = state.currentTag;
+
   if (
     state.currentTag === 'content' ||
     state.currentTag === 'artifact' ||
@@ -215,6 +220,7 @@ function handleCloseTag(state: ParserState): void {
   }
 
   state.currentTag = undefined;
+  return closingTag;
 }
 
 // ─── State → Response ─────────────────────────────────────
@@ -245,7 +251,7 @@ function toResponse(state: ParserState): ParsedResponse {
  * // result.parts[0] = { type: 'content', data: 'Hello world' }
  * ```
  */
-export function createStreamParser(): StreamParser {
+export function createStreamParser(options?: StreamParserOptions): StreamParser {
   let state = initialState();
 
   const parser = new Parser(
@@ -261,9 +267,55 @@ export function createStreamParser(): StreamParser {
         });
       },
       onclosetag() {
+        let closingTag: TagName | undefined;
         state = produce(state, (draft) => {
-          handleCloseTag(draft);
+          closingTag = handleCloseTag(draft);
         });
+
+        // Attempt JSON repair on artifact data when option is enabled
+        if (options?.repairJson && closingTag === 'artifact') {
+          const idx = findLastArtifactIndex(state.parts);
+          if (idx !== -1) {
+            const artifact = state.parts[idx] as ArtifactPart;
+            try {
+              JSON.parse(artifact.data);
+            } catch {
+              const repaired = repairJson(artifact.data);
+              if (repaired !== null) {
+                state = produce(state, (draft) => {
+                  (draft.parts[idx] as ArtifactPart).data = repaired;
+                });
+              }
+            }
+          }
+        }
+
+        // Fire callbacks after produce() so consumers see final immutable state
+        if (options && closingTag) {
+          switch (closingTag) {
+            case 'content': {
+              const idx = findContentIndex(state.parts);
+              if (idx !== -1) {
+                options.onContent?.((state.parts[idx] as ContentPart).data);
+              }
+              break;
+            }
+            case 'artifact': {
+              const idx = findLastArtifactIndex(state.parts);
+              if (idx !== -1) {
+                options.onArtifact?.(state.parts[idx] as ArtifactPart);
+              }
+              break;
+            }
+            case 'thinkitemcontent': {
+              const item = state.think[state.think.length - 1];
+              if (item) {
+                options.onThink?.(item);
+              }
+              break;
+            }
+          }
+        }
       },
     },
     { xmlMode: true, decodeEntities: true },
@@ -274,6 +326,9 @@ export function createStreamParser(): StreamParser {
       parser.write(chunk);
     },
     getResult() {
+      return toResponse(state);
+    },
+    getState() {
       return toResponse(state);
     },
     reset() {

@@ -39,6 +39,21 @@ export interface ParsedResponse {
   isContentClosed: boolean;
 }
 
+// ─── Parser Options ──────────────────────────────────────
+
+export interface StreamParserOptions {
+  onArtifact?: (artifact: ArtifactPart) => void;
+  onThink?: (item: ThinkItem) => void;
+  onContent?: (content: string) => void;
+  /**
+   * When true, attempt to repair malformed JSON in artifact data
+   * before firing the onArtifact callback. Useful for weak/small models
+   * that produce trailing commas, unclosed brackets, or single quotes.
+   * Default: false.
+   */
+  repairJson?: boolean;
+}
+
 // ─── Parser Interface ─────────────────────────────────────
 
 export interface StreamParser {
@@ -46,6 +61,8 @@ export interface StreamParser {
   write(chunk: string): void;
   /** Get current parsed state (safe to call during streaming) */
   getResult(): ParsedResponse;
+  /** Alias for getResult() */
+  getState(): ParsedResponse;
   /** Reset parser to initial state */
   reset(): void;
 }

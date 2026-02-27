@@ -182,6 +182,115 @@ describe('serializeResponse (round-trip)', () => {
   });
 });
 
+// ─── StreamParserOptions callbacks ────────────────────────
+
+describe('createStreamParser with options (callbacks)', () => {
+  it('calls onArtifact when </artifact> closes', () => {
+    const artifacts: any[] = [];
+    const parser = createStreamParser({
+      onArtifact: (a) => artifacts.push(a),
+    });
+
+    parser.write('<artifact type="chart" id="cb-1" version="1">');
+    expect(artifacts).toHaveLength(0);
+
+    parser.write('{"component":"Chart"}</artifact>');
+    expect(artifacts).toHaveLength(1);
+    expect(artifacts[0].type).toBe('artifact');
+    expect(artifacts[0].artifactType).toBe('chart');
+    expect(artifacts[0].id).toBe('cb-1');
+    expect(artifacts[0].data).toBe('{"component":"Chart"}');
+  });
+
+  it('calls onThink when </thinkitemcontent> closes', () => {
+    const thinks: any[] = [];
+    const parser = createStreamParser({
+      onThink: (item) => thinks.push(item),
+    });
+
+    parser.write('<thinkitem ephemeral="true">');
+    parser.write('<thinkitemtitle>Analyzing</thinkitemtitle>');
+    expect(thinks).toHaveLength(0);
+
+    parser.write('<thinkitemcontent>Deep thought</thinkitemcontent>');
+    expect(thinks).toHaveLength(1);
+    expect(thinks[0].title).toBe('Analyzing');
+    expect(thinks[0].content).toBe('Deep thought');
+    expect(thinks[0].ephemeral).toBe(true);
+  });
+
+  it('calls onContent when </content> closes', () => {
+    const contents: string[] = [];
+    const parser = createStreamParser({
+      onContent: (c) => contents.push(c),
+    });
+
+    parser.write('<content thesys="true">Hello ');
+    expect(contents).toHaveLength(0);
+
+    parser.write('world</content>');
+    expect(contents).toHaveLength(1);
+    expect(contents[0]).toBe('Hello world');
+  });
+
+  it('works without options (backward compat)', () => {
+    const parser = createStreamParser();
+    parser.write('<content thesys="true">Hi</content>');
+    const result = parser.getResult();
+    expect(result.parts[0].type).toBe('content');
+    if (result.parts[0].type === 'content') {
+      expect(result.parts[0].data).toBe('Hi');
+    }
+  });
+
+  it('fires multiple callbacks for a complex response', () => {
+    const artifacts: any[] = [];
+    const thinks: any[] = [];
+    const contents: string[] = [];
+
+    const parser = createStreamParser({
+      onArtifact: (a) => artifacts.push(a),
+      onThink: (t) => thinks.push(t),
+      onContent: (c) => contents.push(c),
+    });
+
+    parser.write('<thinkitem ephemeral="true">');
+    parser.write('<thinkitemtitle>Step 1</thinkitemtitle>');
+    parser.write('<thinkitemcontent>Thinking...</thinkitemcontent>');
+    parser.write('</thinkitem>');
+    parser.write('<content thesys="true">Here is the chart:</content>');
+    parser.write('<artifact type="chart" id="a1" version="1">{"c":"Chart"}</artifact>');
+
+    expect(thinks).toHaveLength(1);
+    expect(contents).toHaveLength(1);
+    expect(artifacts).toHaveLength(1);
+    expect(contents[0]).toBe('Here is the chart:');
+  });
+});
+
+// ─── getState alias ──────────────────────────────────────
+
+describe('getState() alias', () => {
+  it('returns the same result as getResult()', () => {
+    const parser = createStreamParser();
+    parser.write('<content thesys="true">Hello</content>');
+
+    const fromGetResult = parser.getResult();
+    const fromGetState = parser.getState();
+
+    expect(fromGetState).toEqual(fromGetResult);
+  });
+
+  it('reflects current state during streaming', () => {
+    const parser = createStreamParser();
+    parser.write('<content thesys="true">Partial');
+
+    const state = parser.getState();
+    expect(state.parts).toHaveLength(1);
+    expect(state.isContentClosed).toBe(false);
+  });
+});
+
 // ─── Edge Cases ───────────────────────────────────────────
 
 describe('edge cases', () => {
@@ -316,6 +425,82 @@ describe('edge cases', () => {
     if (result.parts[1].type === 'artifact') {
       expect(result.parts[1].id).toBe('c1');
       expect(JSON.parse(result.parts[1].data).component).toBe('Chart');
+    }
+  });
+});
+
+// ─── repairJson integration ───────────────────────────────
+
+describe('createStreamParser with repairJson option', () => {
+  it('repairs trailing commas in artifact data', () => {
+    const parser = createStreamParser({ repairJson: true });
+    parser.write('<artifact type="chart" id="r1" version="1">');
+    parser.write('{"chartType":"bar","labels":["Q1","Q2",],}');
+    parser.write('</artifact>');
+
+    const result = parser.getResult();
+    const artifact = result.parts[0];
+    expect(artifact.type).toBe('artifact');
+    if (artifact.type === 'artifact') {
+      const data = JSON.parse(artifact.data);
+      expect(data.chartType).toBe('bar');
+      expect(data.labels).toEqual(['Q1', 'Q2']);
+    }
+  });
+
+  it('repairs single quotes in artifact data', () => {
+    const parser = createStreamParser({ repairJson: true });
+    parser.write(`<artifact type="table" id="r2" version="1">`);
+    parser.write(`{'columns':[{'key':'name'}],'rows':[]}`);
+    parser.write('</artifact>');
+
+    const result = parser.getResult();
+    const artifact = result.parts[0];
+    if (artifact.type === 'artifact') {
+      const data = JSON.parse(artifact.data);
+      expect(data.columns[0].key).toBe('name');
+    }
+  });
+
+  it('does not repair when option is false (default)', () => {
+    const parser = createStreamParser();
+    parser.write('<artifact type="chart" id="r3" version="1">');
+    parser.write('{"chartType":"bar",}');
+    parser.write('</artifact>');
+
+    const result = parser.getResult();
+    if (result.parts[0].type === 'artifact') {
+      // Data should be the raw malformed JSON
+      expect(() => JSON.parse(result.parts[0].data)).toThrow();
+    }
+  });
+
+  it('fires onArtifact callback with repaired data', () => {
+    const artifacts: any[] = [];
+    const parser = createStreamParser({
+      repairJson: true,
+      onArtifact: (a) => artifacts.push(a),
+    });
+
+    parser.write('<artifact type="chart" id="r4" version="1">');
+    parser.write('{"values":[1,2,3,]}');
+    parser.write('</artifact>');
+
+    expect(artifacts).toHaveLength(1);
+    expect(JSON.parse(artifacts[0].data)).toEqual({ values: [1, 2, 3] });
+  });
+
+  it('leaves valid JSON untouched when repair is enabled', () => {
+    const parser = createStreamParser({ repairJson: true });
+    const validJson = '{"chartType":"bar","labels":["Q1","Q2"]}';
+
+    parser.write('<artifact type="chart" id="r5" version="1">');
+    parser.write(validJson);
+    parser.write('</artifact>');
+
+    const result = parser.getResult();
+    if (result.parts[0].type === 'artifact') {
+      expect(result.parts[0].data).toBe(validJson);
     }
   });
 });
