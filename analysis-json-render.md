@@ -86,8 +86,29 @@ props 값이 리터럴이거나 상태 참조(`$state`)일 수 있다:
 { "label": "Hello" }
 
 // 상태 참조 (Dynamic Value)
-{ "label": { "$state": "user.name" } }
+{ "label": { "$state": "/user/name" } }
+
+// 양방향 바인딩 (폼 입력 등)
+{ "value": { "$bindState": "/form/email" } }
+
+// 반복 렌더링 내 아이템 참조
+{ "title": { "$item": "name" } }
+{ "value": { "$bindItem": "quantity" } }
+
+// 조건부 Props
+{ "color": { "$cond": { "$state": "/isError" }, "$then": "red", "$else": "green" } }
 ```
+
+#### 바인딩 표현식 정리
+
+| 표현식 | 용도 |
+|--------|------|
+| `{ "$state": "/path" }` | 상태 트리에서 단방향 읽기 (JSON Pointer) |
+| `{ "$bindState": "/path" }` | 상태 트리와 양방향 바인딩 (읽기+쓰기) |
+| `{ "$item": "field" }` | 반복(repeat) 스코프 내 현재 아이템 읽기 |
+| `{ "$bindItem": "field" }` | 반복 스코프 내 양방향 바인딩 |
+| `{ "$index": true }` | 현재 반복 인덱스 |
+| `{ "$cond"/"$then"/"$else" }` | 조건부 prop 값 |
 
 - `DynamicValue<T>`: `T | { $state: string }` - 리터럴 또는 상태 경로 참조
 - `resolvePropValue()`: 동적 값을 런타임 상태에서 해석
@@ -133,9 +154,24 @@ actions: {
 }
 ```
 
+- 내장 `setState` 액션으로 AI가 상태 변경 로직까지 생성 가능
 - `resolveAction()`: 액션 정의 해석
 - `executeAction()`: 액션 실행
 - `interpolateString()`: 액션 파라미터 내 문자열 보간
+
+### 2.8 Watcher 시스템
+
+상태 값 변경을 감시하여 자동으로 액션을 트리거:
+
+```json
+{
+  "type": "Chart",
+  "props": { "data": { "$state": "/chartData" } },
+  "watch": [
+    { "path": "/selectedRange", "action": "refresh_data" }
+  ]
+}
+```
 
 ### 2.7 검증 시스템
 
