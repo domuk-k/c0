@@ -1,6 +1,10 @@
 {
   "name": "@c0-ui/server",
-  "version": "0.1.0",
+  "version": "0.1.2",
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "description": "System prompts, OpenAI stream adapter, and response builder for c0 — an open-source generative UI pipeline for any OpenAI-compatible LLM (BYOK).",
+  "keywords": ["generative-ui", "genui", "llm", "openai", "streaming", "ai", "byok", "server", "thesys"],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,6 +16,17 @@
   },
   "files": ["dist"],
   "license": "MIT",
+  "author": "Dongwook Kim (domuk-k)",
+  "homepage": "https://github.com/domuk-k/c0#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/domuk-k/c0.git",
+    "directory": "packages/c0-server"
+  },
+  "bugs": "https://github.com/domuk-k/c0/issues",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
