@@ -1,8 +1,14 @@
 # c0
 
+[![CI](https://github.com/domuk-k/c0/actions/workflows/ci.yml/badge.svg)](https://github.com/domuk-k/c0/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@c0-ui/react.svg?label=%40c0-ui%2Freact)](https://www.npmjs.com/package/@c0-ui/react)
+[![license](https://img.shields.io/npm/l/@c0-ui/react.svg)](./LICENSE)
+
 LLM이 리치 UI를 생성하도록 하는 XML-DSL 프로토콜 + 런타임.
 
 > Inspired by [Thesys C1](https://thesys.tech) — open-source reimplementation of the XML-DSL protocol for BYOK (Bring Your Own Key) use cases.
+
+> **ESM-only.** 패키지는 ES 모듈만 제공(CommonJS 미지원). Node.js >=20 + 모던 번들러 또는 TypeScript `moduleResolution: "bundler" | "node16"` 필요.
 
 ## Packages
 
