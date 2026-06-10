@@ -6,11 +6,17 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "lint:publish": "turbo run lint:publish",
     "clean": "turbo run clean"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "publint": "^0.3.12",
     "turbo": "^2",
     "typescript": "^5.7"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "packageManager": "pnpm@9.15.4"
 }

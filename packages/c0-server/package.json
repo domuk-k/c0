@@ -2,7 +2,7 @@
   "name": "@c0-ui/server",
   "version": "0.1.2",
   "sideEffects": false,
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=20" },
   "description": "System prompts, OpenAI stream adapter, and response builder for c0 — an open-source generative UI pipeline for any OpenAI-compatible LLM (BYOK).",
   "keywords": ["generative-ui", "genui", "llm", "openai", "streaming", "ai", "byok", "server", "thesys"],
   "type": "module",
@@ -31,6 +31,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "vitest run",
+    "lint:publish": "publint && attw --pack --profile esm-only",
     "clean": "rm -rf dist"
   },
   "dependencies": {

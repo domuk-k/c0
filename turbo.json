@@ -13,6 +13,9 @@
       "dependsOn": ["build"]
     },
     "lint": {},
+    "lint:publish": {
+      "dependsOn": ["build"]
+    },
     "clean": {
       "cache": false
     }

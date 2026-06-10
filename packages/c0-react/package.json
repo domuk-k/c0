@@ -2,7 +2,7 @@
   "name": "@c0-ui/react",
   "version": "0.1.3",
   "sideEffects": false,
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=20" },
   "description": "React renderers, hooks, and chat UI for c0 — stream LLM-generated rich UI components into your app (generative UI, BYOK).",
   "keywords": ["generative-ui", "genui", "react", "llm", "streaming", "ai", "chat-ui", "hooks", "byok", "thesys"],
   "type": "module",
@@ -74,6 +74,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "lint:publish": "publint && attw --pack --profile esm-only",
     "clean": "rm -rf dist"
   },
   "dependencies": {

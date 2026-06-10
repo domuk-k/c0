@@ -2,7 +2,7 @@
   "name": "@c0-ui/protocol",
   "version": "0.1.2",
   "sideEffects": false,
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=20" },
   "description": "Streaming XML-DSL parser, serializer, and JSON repair for LLM-generated rich UI (generative UI). Framework-agnostic core of c0.",
   "keywords": ["generative-ui", "genui", "llm", "streaming", "xml-dsl", "json-repair", "ai", "byok", "thesys"],
   "type": "module",
@@ -32,6 +32,7 @@
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint:publish": "publint && attw --pack --profile esm-only",
     "clean": "rm -rf dist"
   },
   "dependencies": {
